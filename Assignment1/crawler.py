@@ -7,10 +7,10 @@ import os
 class Crawler:
     def __init__(self, baseUrl:str):
         self.baseUrl=baseUrl
-        self.visited=set()
-        self.queue=list()
-        self.data_loc= "./data/"
-        dir=os.path.dirname(self.data_loc)
+        self._visited=set()
+        self._queue=list()
+        self._data_loc= "./data/"
+        dir=os.path.dirname(self._data_loc)
         if  dir and not os.path.exists(dir):
             os.makedirs( dir)
     def _crawl(self,currUrl:str=None):
@@ -19,18 +19,18 @@ class Crawler:
         page=requests.get(currUrl)
         soup= BeautifulSoup(page.text,'html.parser')
         for link in soup.find_all('a', href=True):
-                full_url = urljoin(currUrl, link['href']) 
-                if full_url not in self.visited and full_url.startswith("http"):
-                    self.visited.add(full_url)
-                    self.queue.append(full_url)
+                fullUrl = urljoin(currUrl, link['href']) 
+                if fullUrl not in self._visited and fullUrl.startswith("http"):
+                    self._visited.add(fullUrl)
+                    self._queue.append(fullUrl)
         return soup.prettify()
     def crawl_n(self,n:int):
-        self.queue.append(self.baseUrl)
+        self._queue.append(self.baseUrl)
         for i in range(n):
-            currUrl= self.queue.pop()
+            currUrl= self._queue.pop()
             print(f"Crawling from:{currUrl}\n")
             soup=self._crawl(currUrl)
-            f = open(f"{self.data_loc}data_{i}.txt", "w",encoding="utf-8")
+            f = open(f"{self._data_loc}data_{i}.txt", "w",encoding="utf-8")
             f.write(soup)
             f.close()
         print(f"Crawled {n} pages succesfully.\n")
